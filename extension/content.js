@@ -1,67 +1,58 @@
-// Basic scanning logic (MVP). Marks elements with class "ea-low-contrast".
-// NOTE: This is a simple, conservative luminance check for demo purposes.
+/**
+ * content.js
+ * Orchestrates all EchoAccessible modules
+ * - Extracts structure
+ * - Rewrites DOM
+ * - (Placeholder) Generates alt-text
+ * - (Placeholder) Injects ARIA tags
+ */
 
-function parseRgb(colorStr) {
-  if (!colorStr) return null;
-  const m = colorStr.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
-  if (!m) return null;
-  return [Number(m[1]), Number(m[2]), Number(m[3])];
-}
+// ----- Orchestrator -----
+function runEchoAccessible(options = {}) {
+    console.log("EchoAccessible running...");
 
-function luminance([r, g, b]) {
-  // simple perceived luminance
-  return 0.299 * r + 0.587 * g + 0.114 * b;
-}
-
-function getEffectiveBackgroundColor(el) {
-  // Walk up until a non-transparent background is found.
-  let node = el;
-  while (node && node !== document.documentElement) {
-    const bg = window.getComputedStyle(node).backgroundColor;
-    if (bg && bg !== 'rgba(0, 0, 0, 0)' && bg !== 'transparent') return bg;
-    node = node.parentElement;
-  }
-  // fallback white
-  return 'rgb(255,255,255)';
-}
-
-function isLowContrast(el) {
-  try {
-    const style = window.getComputedStyle(el);
-    const fg = parseRgb(style.color) || [0,0,0];
-    const bg = parseRgb(getEffectiveBackgroundColor(el)) || [255,255,255];
-    if (!fg || !bg) return false;
-    const L1 = luminance(fg);
-    const L2 = luminance(bg);
-    return Math.abs(L1 - L2) < 50; // conservative threshold for MVP
-  } catch (e) {
-    return false;
-  }
-}
-
-function scanPage() {
-  // remove previous marks
-  document.querySelectorAll(".ea-low-contrast").forEach(n => n.classList.remove("ea-low-contrast"));
-
-  const all = Array.from(document.querySelectorAll("body *"));
-  for (const el of all) {
-    // skip invisible elements
-    const style = window.getComputedStyle(el);
-    if (style.display === "none" || style.visibility === "hidden" || style.opacity === "0") continue;
-    if (isLowContrast(el)) {
-      el.classList.add("ea-low-contrast");
+    // Step 1: Extract structure from DOM
+    if (typeof extractStructure !== "function") {
+        console.error("extractStructure() not found!");
+        return;
     }
-  }
+    const structure = extractStructure();
+
+    // Step 2: Rewrite the DOM
+    if (typeof rewriteDOM !== "function") {
+        console.error("rewriteDOM() not found!");
+        return;
+    }
+    rewriteDOM(structure);
+
+    // Step 3: Generate alt-text (placeholder)
+    if (options.altText && typeof generateAltText === "function") {
+        generateAltText();
+    }
+
+    // Step 4: Inject ARIA tags (placeholder)
+    if (options.aria && typeof injectAriaTags === "function") {
+        injectAriaTags();
+    }
+
+    console.log("EchoAccessible run complete.");
 }
 
-// Listen for messages from popup
+// ----- Message listener for popup buttons -----
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
-  if (msg && msg.action === "scan") {
-    scanPage();
-    sendResponse({ status: "scanned" });
-  }
-  if (msg && msg.action === "clear") {
-    document.querySelectorAll(".ea-low-contrast").forEach(n => n.classList.remove("ea-low-contrast"));
-    sendResponse({ status: "cleared" });
-  }
+    if (msg && msg.action === "run") {
+        runEchoAccessible({ altText: true, aria: true });
+        sendResponse({ status: "done" });
+    }
+
+    if (msg && msg.action === "scan") {
+        // MVP legacy scan (highlight low-contrast) for testing
+        if (typeof scanPage === "function") scanPage();
+        sendResponse({ status: "scanned" });
+    }
+
+    if (msg && msg.action === "clear") {
+        document.querySelectorAll(".ea-low-contrast").forEach(n => n.classList.remove("ea-low-contrast"));
+        sendResponse({ status: "cleared" });
+    }
 });
