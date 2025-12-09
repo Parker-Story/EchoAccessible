@@ -19,8 +19,10 @@
       "domRewriter.js",
       "content.js"
     ],
+    "run_at": "document_idle",
     "css": ["styles/highlight.css"]
   }
 ]
+
 
 }
