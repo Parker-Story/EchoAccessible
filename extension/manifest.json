@@ -1,0 +1,21 @@
+{
+  "manifest_version": 3,
+  "name": "EchoAccessible",
+  "version": "0.1.0",
+  "description": "Analyze and highlight accessibility issues on any webpage.",
+  "permissions": ["activeTab", "scripting"],
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_icon": "icons/icon128.png"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "css": ["styles/highlight.css"]
+    }
+  ]
+}
