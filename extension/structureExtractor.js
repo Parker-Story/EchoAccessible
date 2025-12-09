@@ -19,6 +19,7 @@ function extractStructure(root = document.body) {
 
     // Group into columns based on left position
     const columns = [];
+    const threshold = 50; // px difference to consider same column
 
     elementsWithRect.forEach(({ el, rect }) => {
         let foundColumn = false;
