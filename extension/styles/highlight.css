@@ -1,0 +1,5 @@
+/* Simple visual highlight for MVP */
+.ea-low-contrast {
+  outline: 3px dashed #ff4d4d !important;
+  transition: outline 0.15s ease-in-out;
+}
