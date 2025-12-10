@@ -8,6 +8,10 @@
  */
 
 // ----- Orchestrator -----
+
+import { runAriaInjection } from "./ariaInjector.js";
+
+
 function runEchoAccessible(options = {}) {
     console.log("EchoAccessible running...");
 
@@ -43,6 +47,11 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     if (msg && msg.action === "run") {
         runEchoAccessible({ altText: true, aria: true });
         sendResponse({ status: "done" });
+    }
+
+    if (message.action === "injectAria") {
+    runAriaInjection();
+    sendResponse({ status: "ARIA injection complete" });
     }
 
     if (msg && msg.action === "scan") {
