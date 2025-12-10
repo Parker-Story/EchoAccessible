@@ -5,6 +5,10 @@ document.getElementById("scan").addEventListener("click", async () => {
   });
 });
 
+document.getElementById("inject-aria").addEventListener("click", () => {
+    sendMessage("injectAria");
+});
+
 document.getElementById("clear").addEventListener("click", async () => {
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
   chrome.tabs.sendMessage(tab.id, { action: "clear" }, (resp) => {
